@@ -1,0 +1,65 @@
+name: ClickBench
+
+on: [push, pull_request]
+
+jobs:
+  Cache-ClickBench-Hits-Data:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Cache ClickBench tar
+      id: cache-clickbench-tar
+      uses: actions/cache@v3
+      with:
+        key: clickbench-10M
+        path: hits.tsv
+
+    - name: Download ClickBench tar
+      if: ${{ steps.cache-clickbench-tar.outputs.cache-hit != 'true' }}
+      run: |
+        curl https://datasets.clickhouse.com/hits_compatible/hits.tsv.gz |
+          gunzip  | head -n 10000000 > hits.tsv # 10M tuple
+
+  Test:
+    needs: Cache-ClickBench-Hits-Data
+
+    defaults:
+      run:
+        shell: bash -e -l {0}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        scale_factor: [10000000]
+        dbms:
+          - clickhouse
+          - databend
+          - starrocks
+          - selectdb
+
+    runs-on: ubuntu-20.04 # ${{ matrix.platform }}
+
+    steps:
+
+    - uses: actions/checkout@v3
+
+    - name: Cache ClickBench tar
+      id: cache-clickbench-tar
+      uses: actions/cache@v3
+      with:
+        key: clickbench-10M
+        path: hits.tsv
+
+    - name: Test
+      run: |
+        mv hits.tsv ${{ matrix.dbms }}/
+        cd ${{ matrix.dbms }}
+        sed -i 's/wget.*hits/# /' benchmark.sh
+        sed -i 's/gzip.*hits/# /' benchmark.sh
+        ./benchmark.sh
+
+    - name: archive results
+      uses: actions/upload-artifact@v2
+      with:
+        name: results
+        path: |
+          ${{ matrix.dbms }}/result.csv

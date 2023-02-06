@@ -53,6 +53,8 @@ jobs:
       run: |
         mv hits.tsv ${{ matrix.dbms }}/
         cd ${{ matrix.dbms }}
+        sudo apt-get install rpm || true
+        sed -i 's/wget/wget -nv /' benchmark.sh
         sed -i 's/wget.*hits/# /' benchmark.sh
         sed -i 's/gzip.*hits/# /' benchmark.sh
         ./benchmark.sh

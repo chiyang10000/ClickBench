@@ -11,10 +11,10 @@ tar zxvf StarRocks-${VERSION}.tar.gz
 cd StarRocks-${VERSION}/
 
 # Install dependencies
-sudo yum install -y java-1.8.0-openjdk-devel.x86_64 mysql
+# sudo yum install -y java-1.8.0-openjdk-devel.x86_64 mysql
 
-export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk/
-export PATH=$JAVA_HOME/bin:$PATH
+# export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk/
+# export PATH=$JAVA_HOME/bin:$PATH
 
 # Create directory for FE and BE
 IPADDR=`hostname -i`

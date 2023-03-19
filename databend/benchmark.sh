@@ -17,6 +17,8 @@ CONF
 # databend starts with embedded meta service
 ./bin/databend-query -c config.toml > query.log 2>&1 &
 
+sleep 5
+
 # Load the data
 # Docs: https://databend.rs/doc/use-cases/analyze-hits-dataset-with-databend
 curl 'http://default@localhost:8124/' --data-binary @create.sql

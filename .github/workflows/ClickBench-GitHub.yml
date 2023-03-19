@@ -32,8 +32,8 @@ jobs:
         scale_factor: [10000000]
         dbms:
           - clickhouse
-#          - databend
-          - starrocks
+          - databend
+#          - starrocks
 #          - selectdb
 
     runs-on: ubuntu-20.04 # ${{ matrix.platform }}

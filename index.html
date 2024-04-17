@@ -735,6 +735,26 @@ function renderSummary(filtered_data) {
             return Math.exp(accumulator / used_queries);
         });
         document.getElementById('time-or-size').innerText = 'time';
+
+        sum_timings = filtered_data.map(elem => {
+            const fallback_timing = missing_result_penalty * Math.max(missing_result_time, ...elem.result.map(timings => selectRun(timings)));
+
+            let accumulator = 0;
+            let used_queries = 0;
+
+            const no_queries_selected = selectors.queries.filter(x => x).length == 0;
+
+            for (let i = 0; i < num_queries; ++i) {
+                if (no_queries_selected || selectors.queries[i]) {
+                    const curr_timing = selectRun(elem.result[i]) ?? fallback_timing;
+                    accumulator += curr_timing;
+                    ++used_queries;
+                }
+            }
+
+            return accumulator;
+        });
+        document.getElementById('time-or-size').innerText = 'time';
     }
 
     const sorted_indices = [...summaries.keys()].sort((a, b) => summaries[a] - summaries[b]);
@@ -777,6 +797,16 @@ function renderSummary(filtered_data) {
 
         td_number.appendChild(document.createTextNode(text));
 
+        let td_timing = document.createElement('td');
+        td_timing.className = 'summary-number';
+
+        const text_timing = selectors.metric == 'load' ? (elem.load_time ? `${Math.round(elem.load_time)}s (×${ratio.toFixed(2)})` : 'stateless')
+            :  selectors.metric == 'size' ? `${(elem.data_size / 1024 / 1024 / 1024).toFixed(2)} GiB (×${ratio.toFixed(2)})`
+            : `${sum_timings[idx].toFixed(2)}s (x${(sum_timings[idx]/Math.min(...sum_timings)).toFixed(2)})`;
+
+        td_timing.appendChild(document.createTextNode(text_timing));
+
+
         let td_bar = document.createElement('td');
         td_bar.className = 'summary-bar-cell';
 
@@ -790,6 +820,7 @@ function renderSummary(filtered_data) {
         tr.appendChild(td_name);
         tr.appendChild(td_bar);
         tr.appendChild(td_number);
+        if (!(selectors.metric in ['load', 'size'])) tr.appendChild(td_timing);
         table.appendChild(tr);
     });
 

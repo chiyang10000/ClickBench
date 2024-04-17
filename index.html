@@ -791,17 +791,17 @@ function renderSummary(filtered_data) {
         let td_number = document.createElement('td');
         td_number.className = 'summary-number';
 
-        const text = selectors.metric == 'load' ? (elem.load_time ? `${Math.round(elem.load_time)}s (×${ratio.toFixed(2)})` : 'stateless')
-            :  selectors.metric == 'size' ? `${(elem.data_size / 1024 / 1024 / 1024).toFixed(2)} GiB (×${ratio.toFixed(2)})`
-            : `×${ratio.toFixed(2)}`;
+        const text = selectors.metric == 'load' ? (elem.load_time ? `${Math.round(elem.load_time)}s (×${ratio == 1 ? "🚩" : ratio.toFixed(2)})` : 'stateless')
+            :  selectors.metric == 'size' ? `${(elem.data_size / 1024 / 1024 / 1024).toFixed(2)} GiB (×${ratio == 1 ? "🚩" : ratio.toFixed(2)})`
+            : `×${ratio == 1 ? "🚩" : ratio.toFixed(2)}`;
 
         td_number.appendChild(document.createTextNode(text));
 
         let td_timing = document.createElement('td');
         td_timing.className = 'summary-number';
 
-        const text_timing = selectors.metric == 'load' ? (elem.load_time ? `${Math.round(elem.load_time)}s (×${ratio.toFixed(2)})` : 'stateless')
-            :  selectors.metric == 'size' ? `${(elem.data_size / 1024 / 1024 / 1024).toFixed(2)} GiB (×${ratio.toFixed(2)})`
+        const text_timing = selectors.metric == 'load' ? (elem.load_time ? `${Math.round(elem.load_time)}s (×${ratio == 1 ? "🚩" : ratio.toFixed(2)})` : 'stateless')
+            :  selectors.metric == 'size' ? `${(elem.data_size / 1024 / 1024 / 1024).toFixed(2)} GiB (×${ratio == 1 ? "🚩" : ratio.toFixed(2)})`
             : `${sum_timings[idx].toFixed(2)}s (x${(sum_timings[idx]/Math.min(...sum_timings)).toFixed(2)})`;
 
         td_timing.appendChild(document.createTextNode(text_timing));
@@ -949,7 +949,7 @@ function render() {
             const ratio = curr_timing / baseline_timing;
 
             let td = document.createElement('td');
-            td.appendChild(document.createTextNode(curr_timing ? `${Math.round(curr_timing)}s (×${ratio.toFixed(2)})` : '0'));
+            td.appendChild(document.createTextNode(curr_timing ? `${Math.round(curr_timing)}s (×${ratio == 1 ? "🚩" : ratio.toFixed(2)})` : '0'));
 
             colorize(td, ratio);
             tr.appendChild(td);
@@ -974,7 +974,7 @@ function render() {
             const ratio = curr_size !== null ? curr_size / baseline_size : null;
 
             let td = document.createElement('td');
-            td.appendChild(document.createTextNode(curr_size !== null ? `${(curr_size / 1024 / 1024 / 1024).toFixed(2)} GiB (×${ratio.toFixed(2)})` : '☠'));
+            td.appendChild(document.createTextNode(curr_size !== null ? `${(curr_size / 1024 / 1024 / 1024).toFixed(2)} GiB (×${ratio == 1 ? "🚩" : ratio.toFixed(2)})` : '☠'));
 
             colorize(td, ratio);
             tr.appendChild(td);
@@ -1020,7 +1020,7 @@ function render() {
             const ratio = curr_timing !== null ? (constant_time_add + curr_timing) / (constant_time_add + baseline_timing) : null;
 
             let td = document.createElement('td');
-            td.appendChild(document.createTextNode(curr_timing !== null ? `${curr_timing.toFixed(3)}s (×${ratio.toFixed(2)})` : '☠'));
+            td.appendChild(document.createTextNode(curr_timing !== null ? `${curr_timing.toFixed(3)}s (×${ratio == 1 ? "🚩" : ratio.toFixed(2)})` : '☠'));
 
             colorize(td, ratio);
             tr.appendChild(td);
